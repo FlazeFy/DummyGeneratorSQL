@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+use App\Http\Controllers\DML_API\InsertController as DMLInsert;
+
+######################### Public Route #########################
+
+Route::post('/v1/{type}/{db}/{method}/{len}', [DMLInsert::class, 'insertQuery']);
