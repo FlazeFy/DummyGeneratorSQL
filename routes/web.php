@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+use App\Http\Controllers\Pages\HomepageController;
+
+######################### Public Route #########################
+
+Route::prefix('/')->group(function () {
+    Route::get('/', [HomepageController::class, 'index'])->name('homepage');
 });
