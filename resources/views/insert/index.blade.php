@@ -21,6 +21,7 @@
 
         <!-- CSS Collection -->
         <link rel="stylesheet" href="{{ asset('/css/global_v1.0.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('/css/query_v1.0.css') }}"/>
 
         <!-- JS Collection -->
         <script src="{{ asset('/js/typography_v1.0.js')}}"></script>
@@ -35,6 +36,8 @@
     <body>
         <div class="d-block mx-auto px-3 pt-5" style="max-width:1080px;">
             @include('insert.db-opt')
+
+            <hr>
             @include('insert.box-editor')
         </div>
     </body>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\DatabaseOption;
+use App\Models\Datatype;
 
 class InsertController extends Controller
 {
@@ -17,8 +18,11 @@ class InsertController extends Controller
     public function index()
     {
         $db_opt = DatabaseOption::getAllDBOpt();
+        $type_opt = Datatype::getAllType();
+
         return view('insert.index')
-            ->with('dbopt',$db_opt);
+            ->with('dbopt',$db_opt)
+            ->with('typeopt',$type_opt);
     }
 
     /**
