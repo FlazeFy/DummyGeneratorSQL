@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Pages;
 
 use App\Http\Controllers\Controller;
-
 use Illuminate\Http\Request;
-use App\Models\Menu;
 
-class HomepageController extends Controller
+use App\Models\DatabaseOption;
+
+class InsertController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,14 +16,19 @@ class HomepageController extends Controller
      */
     public function index()
     {
-        $menu = Menu::getAllMenu();
-        return view('homepage.index')
-            ->with('menu',$menu);
+        $db_opt = DatabaseOption::getAllDBOpt();
+        return view('insert.index')
+            ->with('dbopt',$db_opt);
     }
 
-    public function open($menu)
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
     {
-        return redirect()->route('insert')->with('success_message', 'Successfully open menu');
+        //
     }
 
     /**

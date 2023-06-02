@@ -14,9 +14,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 use App\Http\Controllers\Pages\HomepageController;
+use App\Http\Controllers\Pages\InsertController;
 
 ######################### Public Route #########################
 
 Route::prefix('/')->group(function () {
     Route::get('/', [HomepageController::class, 'index'])->name('homepage');
+    Route::post('/open/{menu}', [HomepageController::class, 'open']);
+});
+
+Route::prefix('/insert')->group(function () {
+    Route::get('/', [InsertController::class, 'index'])->name('insert');
 });

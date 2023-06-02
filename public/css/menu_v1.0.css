@@ -1,0 +1,71 @@
+.menu-box{
+    border-radius: 20px;
+    width: 100%;
+    height: 25vh;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    -webkit-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    transition: all 0.4s;
+    cursor: pointer;
+    background: white;
+    border: none;
+    padding: 10px;
+    text-align: center;
+    position: relative;
+}
+.menu-box img {
+    max-height: 180px;
+    -webkit-transition: all 2s;
+    -o-transition: all 2s;
+    transition: all 2s;
+}
+.menu-box p{
+    display: none;
+    -webkit-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    transition: all 0.4s;
+    font-size: 13px !important;
+}
+.menu-box:hover{
+    transform: rotate(3deg);
+    background: #407BFF;
+}
+.menu-box:hover h5{
+    color: white !important;
+    position: absolute;
+    left: 40%;
+    top: 30px;
+}
+.menu-box:hover img {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    height: 10vh;
+}
+.menu-box:hover p {
+    display: block;
+    font-size: 16px;
+    text-align: center;
+    position: absolute;
+    top: 30px;
+}
+.menu-box .stats-box{
+    display: none;
+    height: 10vh;
+    background: #ECEEFF;
+    border-radius: 12px;
+    position: absolute;
+    bottom: -20vh !important;
+    left: -12vh !important;
+    width: 31vh;
+    padding: 10px;
+    text-align: center;
+    color: #454655;
+}
+.menu-box .stats-box h2{
+    font-weight: bold;    
+    font-size: 36px;
+}
+.menu-box:hover .stats-box{
+    display: inline;
+}

@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
         <meta name="description" content="" />
 
-        <title>DummyGenerator</title>
+        <title>DmG | Insert</title>
         <link rel="icon" type="image/png" href="{{asset('/assets/mifik_logo_launch.png')}}"/>
         
         <!-- Fonts -->
@@ -21,7 +21,9 @@
 
         <!-- CSS Collection -->
         <link rel="stylesheet" href="{{ asset('/css/global_v1.0.css') }}"/>
-        <link rel="stylesheet" href="{{ asset('/css/menu_v1.0.css') }}"/>
+
+        <!-- JS Collection -->
+        <script src="{{ asset('/js/typography_v1.0.js')}}"></script>
 
         <!--Scroll reveal-->
         <script src="https://unpkg.com/scrollreveal"></script>
@@ -32,7 +34,8 @@
 
     <body>
         <div class="d-block mx-auto px-3 pt-5" style="max-width:1080px;">
-            @include('homepage.menu')
+            @include('insert.db-opt')
+            @include('insert.box-editor')
         </div>
     </body>
 
