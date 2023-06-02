@@ -42,13 +42,16 @@ h1, h2, h3, h4, h5, h6, title {
     width:20px; 
     margin-top:2px;
 }
-.btn-add{
-    background: #00A164;
+.btn {
     border-radius: 12px;
     color: white !important;
 }
+.btn-add{
+    background: #00A164;
+}
 .btn-cancel{
-    border-radius: 12px;
     background: #EE4600;
-    color: white !important;
+}
+.btn-primary{
+    background: #407BFF;
 }
