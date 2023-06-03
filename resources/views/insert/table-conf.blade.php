@@ -180,6 +180,9 @@
             var data =  response.data;
             $("#factoryopt_"+id).empty();
 
+            var elmt = "<option selected "+getSelected("---", columns[objIndex].factory)+">---</option>";
+            $("#factoryopt_"+id).append(elmt);  
+
             for(var i = 0; i < data.length; i++){
                 //Attribute
                 var appCode = data[i].app_code;

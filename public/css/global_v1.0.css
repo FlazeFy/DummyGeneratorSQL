@@ -55,3 +55,15 @@ h1, h2, h3, h4, h5, h6, title {
 .btn-primary{
     background: #407BFF;
 }
+#rich_box{
+    height: 50vh;
+    border-radius: 12px;
+}
+.ql-toolbar.ql-snow{
+    margin-bottom: 10px;
+    border-radius: 12px;
+}
+.ql-editor.ql-blank{
+    border-top: 1.25px solid #CCCCCC;
+    border-radius: 12px;
+}

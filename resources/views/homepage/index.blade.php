@@ -31,7 +31,7 @@
     </head>
 
     <body>
-        <div class="d-block mx-auto px-3 pt-5" style="max-width:1080px;">
+        <div class="d-block mx-auto px-3 py-5" style="max-width:1080px;">
             @include('homepage.menu')
         </div>
     </body>
