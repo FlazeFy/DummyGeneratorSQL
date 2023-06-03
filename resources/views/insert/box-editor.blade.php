@@ -3,7 +3,7 @@
     <input hidden id="column_format" name="column_format">
     <input hidden id="primary_key_format" name="primary_key_format">
     <input hidden id="table_name_format" name="table_name_format">
-    <a class="btn btn-primary d-block mx-auto py-2 my-3" style="font-size:18px;" id="generate"><i class="fa-solid fa-gears fa-lg"></i> Generate Now!</a>
+    <span id="generate_btn_holder"></span>
 </form>
 
 <div id="rich_box"></div>
@@ -17,6 +17,8 @@
     });
 
     var generate = document.getElementById("generate");
+    var table_whole_info = document.getElementById("table_whole_info");
+    var table_pk_msg = document.getElementById("table_pk_msg");
     generate.addEventListener("click", generateDummy);
     var resbox = document.getElementById("rich_box");
 
@@ -58,5 +60,33 @@
                 }
             }
         });
+    }
+
+    function validateGenerate(){
+        var fail = 0;
+        var pk = 0;
+        columns.forEach(e => {
+            if(e.id == '' || e.column_name == '' || e.column_type == '' || e.factory == ''){
+                fail++;
+            } 
+
+            if(e.column_type == "5"){
+                pk++;
+            }
+        });
+
+        if(fail > 0){
+            table_whole_info.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> You have some unfinished column configuration";
+            generate_btn_holder.innerHTML = "";
+        } else {
+            table_whole_info.innerHTML = "";
+            generate_btn_holder.innerHTML = '<a class="btn btn-primary d-block mx-auto py-2 my-4" style="font-size:18px; max-width:300px;" id="generate"><i class="fa-solid fa-gears fa-lg"></i> Generate Now !</a>';
+        }
+        if(pk == 0){
+            table_pk_msg.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> You haven't define the primary key column in this table";
+            generate_btn_holder.innerHTML = "";
+        } else {
+            table_pk_msg.innerHTML = "";
+        }
     }
 </script>

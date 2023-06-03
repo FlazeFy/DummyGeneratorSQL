@@ -37,6 +37,16 @@ h1, h2, h3, h4, h5, h6, title {
     font-style: italic;
     margin-top: 10px !important;
 }
+.msg-warning{
+    color: #EE4600;
+    font-size: 12.5px;
+    font-weight: 500;
+    font-style: italic;
+    margin-top: 10px !important;
+}
+.text-primary{
+    color: #407BFF;
+}
 .form-check-input{
     height:20px; 
     width:20px; 
@@ -54,6 +64,9 @@ h1, h2, h3, h4, h5, h6, title {
 }
 .btn-primary{
     background: #407BFF;
+}
+.btn-primary-outlined{
+    border: 2.5px solid #407BFF;
 }
 #rich_box{
     height: 50vh;
