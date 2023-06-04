@@ -2,7 +2,7 @@
 <select class="form-select" style="max-width:320px;" id="dbopt" aria-label="Default select example">
     <option selected>---</option>
     @foreach($dbopt as $opt)
-        <option value="{{$opt->app_code}}_{{$opt->database_desc}}">{{$opt->database_name}}</option>
+        <option value="{{$opt->app_code}}_{{$opt->database_desc}}_{{$opt->database_name}}">{{$opt->database_name}}</option>
     @endforeach
 </select>
 <div id="dbopt_msg" class="msg-info"></div>

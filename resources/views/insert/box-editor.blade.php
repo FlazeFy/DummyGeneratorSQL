@@ -3,8 +3,10 @@
     <input hidden id="column_format" name="column_format">
     <input hidden id="primary_key_format" name="primary_key_format">
     <input hidden id="table_name_format" name="table_name_format">
+    <input hidden id="save_format" name="save_format">
+    <input hidden id="save_dummy" name="save_dummy">
     <span id="generate_btn_holder"></span>
-</form>
+</form><br><br>
 
 <div id="rich_box"></div>
 <input name="content_desc" id="content_desc" hidden>
@@ -16,16 +18,17 @@
         theme: 'snow'
     });
 
-    var generate = document.getElementById("generate");
     var table_whole_info = document.getElementById("table_whole_info");
-    var table_pk_msg = document.getElementById("table_pk_msg");
-    generate.addEventListener("click", generateDummy);
+    var table_pk_msg = document.getElementById("table_pk_msg");   
     var resbox = document.getElementById("rich_box");
 
     function generateDummy() {        
         var primary = [];
         var total = dummy_total.value;
+        const dbopt_val = dbopt.value.split("_");
         document.getElementById("table_name_format").value = table_name.value;
+        document.getElementById("save_format").value = save_format_check.checked;
+        document.getElementById("save_dummy").value = save_dummy_check.checked;
         const objIndex = columns.findIndex((obj => obj.column_type == "5"));
         primary.push({
             "id" : columns[objIndex].id,
@@ -40,7 +43,7 @@
         document.getElementById("column_format").value = JSON.stringify(columns);
 
         $.ajax({
-            url: "/api/v1/dml/oracle/insert/"+total,
+            url: "/api/v1/dml/"+dbopt_val[0]+"_"+dbopt_val[2]+"/insert/"+total,
             type: "post",
             data: $('#table_format_form').serialize(),
             dataType: 'json',
@@ -81,6 +84,8 @@
         } else {
             table_whole_info.innerHTML = "";
             generate_btn_holder.innerHTML = '<a class="btn btn-primary d-block mx-auto py-2 my-4" style="font-size:18px; max-width:300px;" id="generate"><i class="fa-solid fa-gears fa-lg"></i> Generate Now !</a>';
+            var generate = document.getElementById("generate");
+            generate.addEventListener("click", generateDummy);
         }
         if(pk == 0){
             table_pk_msg.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> You haven't define the primary key column in this table";

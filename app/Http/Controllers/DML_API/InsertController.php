@@ -11,6 +11,8 @@ use App\Helpers\Generator;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
+use App\Models\History;
+
 class InsertController extends Controller
 {
     /**
@@ -27,6 +29,8 @@ class InsertController extends Controller
     {
         try{
             $result = "";
+            $dbs = explode("_", $db);
+
             for($i = 0; $i < $len; $i++){
                 $jsonPK = Converter::getEncoded($request->primary_key_format);
                 $jsonCol = Converter::getEncoded($request->column_format);
@@ -79,7 +83,30 @@ class InsertController extends Controller
                     
                     $nk_i++;
                 }
+            }
 
+            if($request->save_format == "true"){
+                if($request->save_dummy == "true"){
+                    $syntax = $result;
+                } else {
+                    $syntax = null;
+                }
+                History::create([
+                    'id' => Generator::getUUID(), 
+                    'user_id' => 1, // For now 
+                    'is_public' => 1, // For now, 
+                    'generate_type' => strtoupper($type), 
+                    'database_id' => $dbs[0], 
+                    'method_id' => $method, 
+                    'return_type' => "html", // for now 
+                    'syntax' => $syntax, 
+                    'total_rows' => $len, 
+                    'total_column' => count($col), 
+                    'table_name' => $request->table_name_format, 
+                    'created_at' => date("Y-m-d H:i"), 
+                    'updated_at' => null, 
+                    'deleted_at' => null
+                ]);
             }
 
             return response()->json([
@@ -87,7 +114,7 @@ class InsertController extends Controller
                 'message' => 'Dummy created',
                 'properties' => [
                     'column_type' => strtoupper($type),
-                    'database' => ucfirst($db),
+                    'database' => ucfirst($dbs[1]),
                     'method' => ucfirst($method)
                 ],
                 'data' => $result

@@ -12,11 +12,11 @@
             </div>
             <div class="col-6">
                 <div class="form-check float-end">
-                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+                    <input class="form-check-input" type="checkbox" value="" id="save_format_check" checked>
                     <label class="form-check-label" for="flexCheckChecked">&nbspSave Format</label>
                 </div>
                 <div class="form-check float-end" style="margin-right:20px;">
-                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+                    <input class="form-check-input" type="checkbox" value="" id="save_dummy_check" checked>
                     <label class="form-check-label" for="flexCheckChecked">&nbspSave Dummy</label>
                 </div>
             </div>
@@ -29,6 +29,8 @@
 <script>
     var query_section = document.getElementById("query_section");
     var table_name = document.getElementById("table_name");
+    var save_format_check = document.getElementById("save_format_check");
+    var save_dummy_check = document.getElementById("save_dummy_check");
     var addcol =  document.getElementById("addcol");
     var columns = [];
 
@@ -92,7 +94,7 @@
         columns.forEach(e => {
             var elmt = '<div class="column-box" id="column-box_' + e.id + '"> ' +
                 '<button class="btn btn-cancel position-absolute mt-2" style="left:-50px; top:0;" onclick="deleteColumn('+"'"+e.id+"'"+')"><i class="fa-solid fa-xmark"></i></button> ' +
-                '<button class="btn btn-primary position-absolute mt-2" style="left:-50px; top:45px; padding-inline:10px;"><i class="fa-solid fa-eye fa-sm"></i></button> ' +
+                '<button class="btn btn-primary position-absolute mt-2" style="left:-50px; top:45px; padding-inline:10px;" data-bs-toggle="collapse" data-bs-target="#collapse_column_' + e.id + '"><i class="fa-solid fa-eye fa-sm"></i></button> ' +
                 '<span id="extras_key_' + e.id + '">' + getPrimaryKeyIcon(e.column_type) + '</span> ' +
                 '<div class="row"> ' +
                     '<div class="col-lg-4"> ' +
@@ -110,28 +112,30 @@
                         '<input type="number" class="form-control-inner" id="column_length_' + e.id + '" style="width:100%;" min="0" max="1000" oninput="updateColumn(this.value, '+"'"+e.id+"'"+', '+"'length'"+')" value="' + e.column_length + '"> ' +
                     '</div> ' +
                 '</div> ' + 
-                '<div class="row mt-3"> ' +
-                    '<div class="col-lg-4"> ' +
-                        '<h6>Factory</h6> ' +
-                        '<select class="form-select" style="max-width:320px; margin-top:0;" id="factoryopt_' + e.id + '" oninput="updateColumn(this.value, '+"'"+e.id+"'"+', '+"'factory'"+')" aria-label="Default select example"></select> ' +
-                    '</div> ' +
-                    '<div class="col-lg-4"> ' +
-                        '<h6>Samples</h6> ' +
-                    '</div> ' +
-                    '<div class="col-lg-4"> ' +
-                        '<h6>Extras</h6> ' +
-                        '<span id="is_null_check_holder_' + e.id + '"> ' +
-                            '<input class="form-check-input" type="checkbox" '+getChecked(e.is_null)+' onchange="updateColumn(this.checked, '+"'"+e.id+"'"+', '+"'is_null'"+')" id="is_null_check_' + e.id + '"> ' +
-                            '<label class="form-check-label" for="flexCheckChecked">&nbspNullable</label> ' +
-                        '</span> ' +
-                        '<span id="is_unique_check_holder_' + e.id + '" '+getHidden(e.column_type, '5')+'> ' +
-                            '<input class="form-check-input" type="checkbox" value="" id="is_unique_check_' + e.id + '"> ' +
-                            '<label class="form-check-label" for="flexCheckChecked">&nbspUnique</label> ' +
-                        '</span> ' +
-                        '<span id="is_hash_check_holder_' + e.id + '" '+getHidden(e.column_type, '5')+'> ' +
-                            '<input class="form-check-input" type="checkbox" value="" id="is_hash_check_' + e.id + '"> ' +
-                            '<label class="form-check-label" for="flexCheckChecked">&nbspHash</label> ' +
-                        '</span> ' +
+                '<div class="collapse show" id="collapse_column_' + e.id + '"> ' +
+                    '<div class="row mt-3"> ' +
+                        '<div class="col-lg-4"> ' +
+                            '<h6>Factory</h6> ' +
+                            '<select class="form-select" style="max-width:320px; margin-top:0;" id="factoryopt_' + e.id + '" oninput="updateColumn(this.value, '+"'"+e.id+"'"+', '+"'factory'"+')" aria-label="Default select example"></select> ' +
+                        '</div> ' +
+                        '<div class="col-lg-4"> ' +
+                            '<h6>Samples</h6> ' +
+                        '</div> ' +
+                        '<div class="col-lg-4"> ' +
+                            '<h6>Extras</h6> ' +
+                            '<span id="is_null_check_holder_' + e.id + '"> ' +
+                                '<input class="form-check-input" type="checkbox" '+getChecked(e.is_null)+' onchange="updateColumn(this.checked, '+"'"+e.id+"'"+', '+"'is_null'"+')" id="is_null_check_' + e.id + '"> ' +
+                                '<label class="form-check-label" for="flexCheckChecked">&nbspNullable</label> ' +
+                            '</span> ' +
+                            '<span id="is_unique_check_holder_' + e.id + '" '+getHidden(e.column_type, '5')+'> ' +
+                                '<input class="form-check-input" type="checkbox" value="" id="is_unique_check_' + e.id + '"> ' +
+                                '<label class="form-check-label" for="flexCheckChecked">&nbspUnique</label> ' +
+                            '</span> ' +
+                            '<span id="is_hash_check_holder_' + e.id + '" '+getHidden(e.column_type, '5')+'> ' +
+                                '<input class="form-check-input" type="checkbox" value="" id="is_hash_check_' + e.id + '"> ' +
+                                '<label class="form-check-label" for="flexCheckChecked">&nbspHash</label> ' +
+                            '</span> ' +
+                        '</div> ' +
                     '</div> ' +
                 '</div> ' +
             '</div> ';
