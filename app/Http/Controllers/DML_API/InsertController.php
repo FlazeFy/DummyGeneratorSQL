@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Helpers\Converter;
 use App\Helpers\Generator;
+use Goutte\Client;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -55,9 +56,11 @@ class InsertController extends Controller
                 // Non-Keys Section
                 $nonKeys = "";
                 $nk_i = 0;
+                $countries = [];
+
                 foreach($col as $cl){
                     //String
-                    if($cl['factory'] == "fname" || $cl['factory'] == "date" || $cl['factory'] == "prgh" || $cl['factory'] == "uname" || $cl['factory'] == "mail" || $cl['factory'] == "pass"){
+                    if($cl['factory'] == "fname" || $cl['factory'] == "date" || $cl['factory'] == "prgh" || $cl['factory'] == "uname" || $cl['factory'] == "mail" || $cl['factory'] == "pass" || $cl['factory'] == "ctrys" || $cl['factory'] == "ctryr"){
                         if($cl['factory'] == "fname"){
                             $val = fake()->name();
                         } else if($cl['factory'] == "date"){
@@ -70,6 +73,24 @@ class InsertController extends Controller
                             $val = fake()->unique()->safeEmail();
                         } else if($cl['factory'] == "pass"){
                             $val = fake()->password();
+                        } else if($cl['factory'] == "ctrys" || $cl['factory'] == "ctryr"){
+                            if (empty($countries)) {
+                                $client = new Client();
+                                $url = 'https://www.iban.com/country-codes';
+                                $crawler = $client->request('GET', $url);
+                            
+                                $table = $crawler->filter('.tablesorter');
+                                $tbody = $table->filter('tbody');
+                                
+                                $tbody->filter('tr')->each(function ($item) use (&$countries) {
+                                    $name = $item->filter('td')->first()->text();
+                                    array_push($countries, $name);
+                                });
+                            }
+                            
+                            $key = array_rand($countries, 1);
+                            $val = $countries[$key];
+
                         }
                         $nonKeys .= "'".$val."'";
                     }

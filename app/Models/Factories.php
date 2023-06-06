@@ -18,6 +18,7 @@ class Factories extends Model
             ->where('datatype_id', $dt)
             ->where('is_active', 1)
             ->whereNull('deleted_at')
+            ->orderBy('factory_name', 'ASC')
             ->orderBy('updated_at', 'DESC')
             ->orderBy('created_at', 'DESC')
             ->get();
