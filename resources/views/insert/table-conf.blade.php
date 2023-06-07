@@ -20,7 +20,7 @@
                     <label class="form-check-label" for="flexCheckChecked">&nbspSave Dummy</label>
                 </div>
             </div>
-        </div>
+        </div><hr>
         <div class="column-holder" id="column-holder"></div>
         <button class="btn btn-add" id="addcol" disabled><i class="fa-solid fa-plus"></i> Add Column</button>
     </div>
@@ -33,6 +33,7 @@
     var save_dummy_check = document.getElementById("save_dummy_check");
     var addcol =  document.getElementById("addcol");
     var columns = [];
+    var slct_list = [];
 
     table_name.addEventListener("change", cleanTableName);
     table_name.addEventListener("input", validateTable);
@@ -204,6 +205,8 @@
 
             //Generate samples
             if(val == "ctryr"){
+                var session_slct_list = sessionStorage.getItem('slct_samples_'+id);
+
                 var elmt = ' ' +
                     '<button class="btn btn-open-sample" onclick="loadSample(' + "'" + id + "'" + ')" data-bs-toggle="modal" data-bs-target="#manageSample_' + id + '"><i class="fa-solid fa-gear"></i> Manage Sample</button> ' +
                     '<div class="position-relative"> ' +
@@ -211,13 +214,16 @@
                             '<div class="modal-dialog modal-lg"> ' +
                                 '<div class="modal-content">  ' +
                                     '<div class="modal-body pt-4" style="height:75vh;"> ' +
-                                        '<button type="button" class="custom-close-modal" onclick="clean('+"'"+id+"'"+')" data-bs-dismiss="modal" aria-label="Close" title="Close pop up"><i class="fa-solid fa-xmark"></i></button> ' +
+                                        '<button type="button" class="custom-close-modal" onclick="cleanListSample('+"'"+id+"'"+')" data-bs-dismiss="modal" aria-label="Close" title="Close pop up"><i class="fa-solid fa-xmark"></i></button> ' +
                                         '<h5>Sample Factory <span class="text-primary fw-bolder">Country</span></h5> ' +
-                                        '<h6>Available Item</h6> ' +
+                                        '<h6>Available Samples</h6> ' +
                                         '<div id="sample_item_holder_' + id + '"></div> ' +
                                         '<div id="sample_loading_holder_' + id + '"> ' +
                                             '<lottie-player src="https://assets10.lottiefiles.com/packages/lf20_7fwvvesa.json" background="transparent" speed="1" style="width: 320px; height: 320px; display:block; margin-inline:auto;" loop autoplay></lottie-player> ' +
                                         '</div> ' +
+                                        '<h6>Selected Samples</h6> ' +
+                                        '<div id="sample_slct_item_holder_' + id + '"></div> ' +
+                                        '<span id="btn-submit-holder_' + id + '"><button disabled class="btn custom-submit-modal"><i class="fa-solid fa-lock"></i> Locked</button></span> ' +
                                     '</div> ' +
                                 '</div> ' +
                             '</div> ' +
@@ -301,6 +307,51 @@
         });
     }
 
+    function cleanListSample(id){
+        $("#sample_item_holder_"+id).empty();
+    }
+
+    function addSelectedSample(id, sample_slug, sample_name, is_deleted){
+        var found = false;
+
+        //Remove selected sample from sample collection
+        if(is_deleted){
+            var sample = document.getElementById('sample_col_'+sample_slug);
+            sample.parentNode.removeChild(sample);
+        }
+
+        if(slct_list.length > 0){
+            slct_list.map((val, index) => {
+                if(val == sample_slug){
+                    found = true;
+                }
+            });
+            console.log(found)
+
+            if(found == false){
+                slct_list.push(sample_slug);
+                $("#sample_slct_item_holder_"+id).append("<div class='d-inline' id='sample_col_"+sample_slug+"'><input hidden name='content_sample[]' value='{"+'"'+"sample_slug"+'"'+":"+'"'+sample_slug+'"'+", "+'"'+"sample_name"+'"'+":"+'"'+sample_name+'"'+"}'><button class='btn btn-sample off' onclick='removeSelectedSample("+'"'+ id +'"'+", "+'"' + sample_slug + '"'+", "+'"' + sample_name + '"'+")'>" + ucFirst(sample_name) + "</button></div>");
+            }
+        } else { 
+            slct_list.push(sample_slug);
+            $("#sample_slct_item_holder_"+id).append("<div class='d-inline' id='sample_col_"+sample_slug+"'><input hidden name='content_sample[]' value='{"+'"'+"sample_slug"+'"'+":"+'"'+sample_slug+'"'+", "+'"'+"sample_name"+'"'+":"+'"'+sample_name+'"'+"}'><button class='btn btn-sample off' onclick='removeSelectedSample("+'"'+ id +'"'+", "+'"' + sample_slug + '"'+", "+'"' + sample_name + '"'+")'>" + ucFirst(sample_name) + "</button></div>");
+        }
+
+        getButtonSubmitSample(id);
+    }
+
+    function removeSelectedSample(id, sample_slug, sample_name){
+        //Remove selected sample
+        var sample = document.getElementById('sample_col_'+sample_slug);
+        slct_list = slct_list.filter(function(e) { return e !== sample_slug })
+        sample.parentNode.removeChild(sample);
+
+        //Return selected sample to sample collection
+        $("#sample_item_holder_"+id).append('<button class="btn btn-sample off" id="sample_col_' + sample_slug +'" onclick="addSelectedSample('+"'"+ id +"'"+', '+"'" + sample_slug + "'"+', '+"'" + sample_name + "'"+',true)">' + ucFirst(sample_name) + '</button>');
+
+        getButtonSubmitSample(id);
+    }
+
     function loadSample(id) {        
         var page = 1;
         $("#sample_loading_holder_"+id).show();
@@ -321,7 +372,7 @@
                 //Attribute
                 var sampleName = data[i].country_name;
 
-                var elmt = "<button class='btn btn-sample off'>" + ucFirst(sampleName) + "</button>";
+                var elmt = '<button class="btn btn-sample off" id="sample_col_' + removeSpaces(sampleName) +'" onclick="addSelectedSample('+"'"+ id +"'"+', '+"'" + removeSpaces(sampleName) + "'"+', '+"'" + sampleName + "'"+',true)">' + ucFirst(sampleName) + '</button>';
                 
                 $("#sample_item_holder_"+id).append(elmt);   
             }
@@ -333,5 +384,13 @@
                 // handle other errors
             }
         });
+    }
+
+    function getButtonSubmitSample(id){
+        if(slct_list.length == 0){
+            document.getElementById("btn-submit-holder_" + id).innerHTML = '<button disabled class="btn custom-submit-modal" onclick=""><i class="fa-solid fa-lock"></i> Locked</button>';
+        } else {
+            document.getElementById("btn-submit-holder_" + id).innerHTML = '<button class="btn custom-submit-modal" onclick=""><i class="fa-solid fa-floppy-disk"></i> Save</button>';
+        }
     }
 </script>

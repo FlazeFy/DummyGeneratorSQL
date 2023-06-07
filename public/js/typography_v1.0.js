@@ -19,3 +19,7 @@ function ucFirst(val) {
 
     return res;
 }
+
+function removeSpaces(val){
+    return val.replace(/\s/g, "");
+}

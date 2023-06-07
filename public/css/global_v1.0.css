@@ -55,6 +55,7 @@ h1, h2, h3, h4, h5, h6, title {
 .btn {
     border-radius: 12px;
     color: white !important;
+    opacity: 100% !important;
 }
 .btn-add{
     background: #00A164;
@@ -127,4 +128,14 @@ h1, h2, h3, h4, h5, h6, title {
     color: white;
     margin-right: 4px;
     margin-bottom: 5px;
+}
+.custom-submit-modal{
+    position: absolute;
+    background: white !important;
+    color: #00A164 !important;
+    border: 2px solid #00A164;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    right: 15px;
+    padding: 8px 12px;
+    bottom: -15px;
 }
