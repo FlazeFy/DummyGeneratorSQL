@@ -58,6 +58,7 @@
             "column_length" : 36,
             "factory" : "",
             "is_null" : false,
+            "sample" : null
         });
         validateGenerate();
         loadColumns();
@@ -120,6 +121,7 @@
                         '</div> ' +
                         '<div class="col-lg-4"> ' +
                             '<h6>Samples</h6> ' +
+                            '<span id="samples_opt_holder_' + e.id + '"><a class="mt-4 pt-2 fst-italic text-secondary text-decoration-none"> - No Sample Available - </a></span> ' +
                         '</div> ' +
                         '<div class="col-lg-4"> ' +
                             '<h6>Extras</h6> ' +
@@ -159,7 +161,8 @@
                 "column_type" : columns[objIndex].column_type,
                 "column_length" : parseInt(columns[objIndex].column_length),
                 "factory" : columns[objIndex].factory,
-                "is_null" : columns[objIndex].is_null
+                "is_null" : columns[objIndex].is_null,
+                "sample" : null
             };
         } else if(type == "type"){
             if(val == "5"){
@@ -185,7 +188,8 @@
                 "column_type" : val,
                 "column_length" : parseInt(columns[objIndex].column_length),
                 "factory" : columns[objIndex].factory,
-                "is_null" : nullable
+                "is_null" : nullable,
+                "sample" : null
             };
         } else if(type == "factory"){
             columns[objIndex] = {
@@ -194,8 +198,35 @@
                 "column_type" : columns[objIndex].column_type,
                 "column_length" : parseInt(columns[objIndex].column_length),
                 "factory" : val,
-                "is_null" : columns[objIndex].is_null
+                "is_null" : columns[objIndex].is_null,
+                "sample" : null
             };
+
+            //Generate samples
+            if(val == "ctryr"){
+                var elmt = ' ' +
+                    '<button class="btn btn-open-sample" onclick="loadSample(' + "'" + id + "'" + ')" data-bs-toggle="modal" data-bs-target="#manageSample_' + id + '"><i class="fa-solid fa-gear"></i> Manage Sample</button> ' +
+                    '<div class="position-relative"> ' +
+                        '<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="manageSample_' + id + '" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"> ' +
+                            '<div class="modal-dialog modal-lg"> ' +
+                                '<div class="modal-content">  ' +
+                                    '<div class="modal-body pt-4" style="height:75vh;"> ' +
+                                        '<button type="button" class="custom-close-modal" onclick="clean('+"'"+id+"'"+')" data-bs-dismiss="modal" aria-label="Close" title="Close pop up"><i class="fa-solid fa-xmark"></i></button> ' +
+                                        '<h5>Sample Factory <span class="text-primary fw-bolder">Country</span></h5> ' +
+                                        '<h6>Available Item</h6> ' +
+                                        '<div id="sample_item_holder_' + id + '"></div> ' +
+                                        '<div id="sample_loading_holder_' + id + '"> ' +
+                                            '<lottie-player src="https://assets10.lottiefiles.com/packages/lf20_7fwvvesa.json" background="transparent" speed="1" style="width: 320px; height: 320px; display:block; margin-inline:auto;" loop autoplay></lottie-player> ' +
+                                        '</div> ' +
+                                    '</div> ' +
+                                '</div> ' +
+                            '</div> ' +
+                        '</div> ' +
+                    '</div> ';
+                document.getElementById("samples_opt_holder_" + id ).innerHTML = elmt;
+            } else {
+                document.getElementById("samples_opt_holder_" + id ).innerHTML = '<a class="mt-4 pt-2 fst-italic text-secondary text-decoration-none"> - No Sample Available - </a>';
+            }
         } else if(type == "length"){
             columns[objIndex] = {
                 "id" : columns[objIndex].id,
@@ -203,7 +234,8 @@
                 "column_type" : columns[objIndex].column_type,
                 "column_length" : parseInt(val),
                 "factory" : columns[objIndex].factory,
-                "is_null" : columns[objIndex].is_null
+                "is_null" : columns[objIndex].is_null,
+                "sample" : null
             };
         } else if(type == "is_null"){
             columns[objIndex] = {
@@ -212,7 +244,8 @@
                 "column_type" : columns[objIndex].column_type,
                 "column_length" : parseInt(columns[objIndex].column_length),
                 "factory" : columns[objIndex].factory,
-                "is_null" : val
+                "is_null" : val,
+                "sample" : null
             };
         }
         validateGenerate();
@@ -262,6 +295,40 @@
             if (jqXHR.status == 404) {
                 $('.auto-load').hide();
                 $("#empty_item_holder").html("<div class='err-msg-data'><img src='{{ asset('/assets/nodata2.png')}}' class='img' style='width:280px;'><h6 class='text-secondary text-center'>Data not found</h6></div>");
+            } else {
+                // handle other errors
+            }
+        });
+    }
+
+    function loadSample(id) {        
+        var page = 1;
+        $("#sample_loading_holder_"+id).show();
+
+        $.ajax({
+            url: "/api/v2/column/factory/gen/country/50?page="+1,
+            datatype: "json",
+            type: "get",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Accept", "application/json");
+            }
+        })
+        .done(function (response) {
+            var data =  response.data.data;
+            $("#sample_loading_holder_"+id).hide();
+    
+            for(var i = 0; i < data.length; i++){
+                //Attribute
+                var sampleName = data[i].country_name;
+
+                var elmt = "<button class='btn btn-sample off'>" + ucFirst(sampleName) + "</button>";
+                
+                $("#sample_item_holder_"+id).append(elmt);   
+            }
+        })
+        .fail(function (jqXHR, ajaxOptions, thrownError) {
+            if (jqXHR.status == 404) {
+                // not found error
             } else {
                 // handle other errors
             }

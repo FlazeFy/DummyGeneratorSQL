@@ -24,5 +24,5 @@ Route::post('/v1/{type}/{db}/{method}/{len}', [DMLInsert::class, 'insertQuery'])
 
 Route::prefix('/v2/column')->group(function() {
     Route::get('/factory/{id}', [ColumnFactory::class, 'getFactoryByIdType']);
-    Route::get('/factory/gen/country', [CountryFactory::class, 'getCountryFactory']);
+    Route::get('/factory/gen/country/{limit}', [CountryFactory::class, 'getCountryFactory']);
 });

@@ -14,7 +14,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class CountryController extends Controller
 {
-    public function getCountryFactory(Request $request)
+    public function getCountryFactory(Request $request, $limit)
     {
         try{
             $client = new Client();
@@ -39,7 +39,7 @@ class CountryController extends Controller
 
             $data = $this->results;
             $collection = collect($data);
-            $perPage = 12;
+            $perPage = $limit;
             $page = request()->input('page', 1);
             $paginator = new LengthAwarePaginator(
                 $collection->forPage($page, $perPage),

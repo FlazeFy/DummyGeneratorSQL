@@ -41,7 +41,6 @@
     <body>
         <div class="d-block mx-auto px-3 py-5" style="max-width:1080px;">
             @include('insert.db-opt')
-
             @include('insert.box-editor')
         </div>
     </body>
@@ -49,4 +48,5 @@
     <script>        
         ScrollReveal().reveal('.welcome-container', { delay: 500, distance: '80px', origin: 'left', easing: 'ease-in-out' });
     </script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 </html>

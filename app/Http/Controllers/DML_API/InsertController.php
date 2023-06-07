@@ -75,6 +75,7 @@ class InsertController extends Controller
                             $val = fake()->password();
                         } else if($cl['factory'] == "ctrys" || $cl['factory'] == "ctryr"){
                             if (empty($countries)) {
+                                $pattern = '/\s*\([^)]*\)/';
                                 $client = new Client();
                                 $url = 'https://www.iban.com/country-codes';
                                 $crawler = $client->request('GET', $url);
@@ -89,7 +90,7 @@ class InsertController extends Controller
                             }
                             
                             $key = array_rand($countries, 1);
-                            $val = $countries[$key];
+                            $val = preg_replace($pattern, '', $countries[$key]);
 
                         }
                         $nonKeys .= "'".$val."'";

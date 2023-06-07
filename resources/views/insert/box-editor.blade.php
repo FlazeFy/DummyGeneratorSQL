@@ -6,14 +6,24 @@
     <input hidden id="save_format" name="save_format">
     <input hidden id="save_dummy" name="save_dummy">
     <span id="generate_btn_holder"></span>
-</form><br><br>
+</form><br>
 
 <div id="rich_box"></div>
+
+<div id="loading">
+    <div class="loading-screen">
+        <lottie-player src="https://assets3.lottiefiles.com/private_files/lf30_mnZRTk.json" background="transparent" speed="0.5" 
+            style="width: 620px; height: 620px;"  loop autoplay></lottie-player>
+        <h4 class="position-absolute" style="top:55vh; left:75vh;">Generating dummy data...</h4>
+    </div>
+</div>
+
 <input name="content_desc" id="content_desc" hidden>
 
 <!-- Main Quill library -->
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <script>
+    $('#loading').hide(); 
     var quill = new Quill('#rich_box', {
         theme: 'snow'
     });
@@ -22,7 +32,11 @@
     var table_pk_msg = document.getElementById("table_pk_msg");   
     var resbox = document.getElementById("rich_box");
 
-    function generateDummy() {        
+    function generateDummy() {  
+        window.scrollTo(0, 0);
+        $('#loading').show();  
+
+        document.getElementById("loading").setAttribute("class","d-normal");      
         var primary = [];
         var total = dummy_total.value;
         const dbopt_val = dbopt.value.split("_");
@@ -30,6 +44,7 @@
         document.getElementById("save_format").value = save_format_check.checked;
         document.getElementById("save_dummy").value = save_dummy_check.checked;
         const objIndex = columns.findIndex((obj => obj.column_type == "5"));
+
         primary.push({
             "id" : columns[objIndex].id,
             "is_increment": false, // for now
@@ -52,8 +67,12 @@
             },
             success: function(response) {
                 resbox.innerHTML = response.data;
-            },
+                $('#loading').hide();  
+                
+            },  
             error: function(response, jqXHR, textStatus, errorThrown) {
+                $('#loading').hide();  
+  
                 if (response && response.responseJSON && response.responseJSON.hasOwnProperty('result')) {   
                     
                 } else if(response && response.responseJSON && response.responseJSON.hasOwnProperty('errors')){
