@@ -43,8 +43,9 @@
             @include('insert.db-opt')
             @include('insert.box-editor')
         </div>
+        @include('components.modal.success')
     </body>
-
+    
     <script>        
         ScrollReveal().reveal('.welcome-container', { delay: 500, distance: '80px', origin: 'left', easing: 'ease-in-out' });
     </script>
