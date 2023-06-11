@@ -14,11 +14,13 @@ class Menu extends Model
     protected $fillable = ['id', 'sort_number', 'is_protected', 'protected_key', 'menu_group', 'menu_name', 'menu_url', 'menu_image_path', 'is_active', 'menu_desc', 'created_at', 'updated_at', 'deleted_at'];
 
     public static function getAllMenu(){
-        $res = Menu::select('is_protected', 'menu_group', 'menu_name', 'menu_url', 'menu_image_path', 'menu_desc')
+        $res = Menu::selectRaw('is_protected, menu_group, menu_name, menu_url, menu_image_path, menu_desc, CASE WHEN SUM(total_rows) IS NOT NULL THEN SUM(total_rows) ELSE 0 END AS total_dummy')
+            ->leftJoin('histories','menus.menu_name','=','histories.method_id')
             ->where('is_active', 1)
-            ->whereNull('deleted_at')
+            ->whereNull('menus.deleted_at')
+            ->groupBy('is_protected', 'menu_group', 'menu_name', 'menu_url', 'menu_image_path', 'menu_desc')
             ->orderBy('sort_number', 'DESC')
-            ->orderBy('updated_at', 'DESC')
+            ->orderBy('menus.updated_at', 'DESC')
             ->get();
 
         return $res;

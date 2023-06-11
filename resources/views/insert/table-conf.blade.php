@@ -92,6 +92,7 @@
     
     function loadColumns(){
         $("#column-holder").empty(); 
+        var i = 0;
 
         columns.forEach(e => {
             var elmt = '<div class="column-box" id="column-box_' + e.id + '"> ' +
@@ -105,7 +106,7 @@
                     '</div> ' +
                     '<div class="col-lg-4"> ' +
                         '<h6>Data Type</h6> ' +
-                        '<select class="form-select" style="max-width:320px; margin-top:0;" id="typeopt_' + e.id + '" onchange="loadFactory('+"'"+e.id+"'"+'); updateColumn(this.value, '+"'"+e.id+"'"+', '+"'type'"+')" aria-label="Default select example"> ' +
+                        '<select class="form-select" style="max-width:320px; margin-top:0;" id="typeopt_' + e.id + '" onchange="loadFactory('+"'"+e.id+"'"+','+"'type'"+'); updateColumn(this.value, '+"'"+e.id+"'"+', '+"'type'"+')" aria-label="Default select example"> ' +
                             getSelectedOpt(e.column_type) +
                         '</select> ' +
                     '</div> ' +
@@ -146,8 +147,8 @@
             '</div> ';
 
             $("#column-holder").append(elmt);   
-            loadFactory(e.id);
-
+            loadFactory(e.id, "type", i);
+            i++;
         });   
     }
 
@@ -210,7 +211,7 @@
                 var session_slct_list = sessionStorage.getItem('slct_samples_'+id);
 
                 var elmt = ' ' +
-                    '<button class="btn btn-open-sample" onclick="loadSample(' + "'" + id + "'" + ')" data-bs-toggle="modal" data-bs-target="#manageSample_' + id + '"><i class="fa-solid fa-gear"></i> Manage Sample</button> ' +
+                    '<button class="btn btn-open-sample" onclick="loadSample(' + "'" + id + "'" + ',' + "'" + val + "'" + ', ' + objIndex + ')" data-bs-toggle="modal" data-bs-target="#manageSample_' + id + '"><i class="fa-solid fa-gear"></i> Manage Sample</button> ' +
                     '<div class="position-relative"> ' +
                         '<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="manageSample_' + id + '" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"> ' +
                             '<div class="modal-dialog modal-lg"> ' +
@@ -256,9 +257,30 @@
                 "sample" : null
             };
         }
+
+        toogleAvailableSample(id, type, objIndex);
         validateGenerate();
-        getAvailableSelectedSample(id, type);
         console.log(columns);
+    }
+
+    function useSample(id, objIndex){
+        
+    }   
+
+    function toogleAvailableSample(id, type, objIndex){
+        if(columns.length > objIndex && columns[objIndex].hasOwnProperty('factory')){
+            if(columns[objIndex].factory == "ctryr"){
+                getAvailableSelectedSample(id, "ctryr");
+            } else {
+                document.getElementById("sample_template_load_" + id).innerHTML = "";
+            }
+        }
+    }
+
+    function getSampleTitle(val){
+        if(val == "ctryr"){
+            return "Country";
+        }
     }
 
     function getAvailableSelectedSample(id, type){
@@ -271,9 +293,10 @@
                 var type = key.startsWith("selected_sample_type_");
                 var spt = key.split("_");
                 
-                $("#sample_template_load_"+id).append("<div class='col-lg-6 col-md-6 col-sm-12'><div class='template-value-holder' title='Use this sample template'><h6 class='text-primary'>"+ucFirst(sessionStorage.getItem("selected_sample_type_"+spt[3]))+"</h6><div id='template_value_"+id+"_"+key+"'></div></div></div>");
+                $("#sample_template_load_"+id).append("<div class='col-lg-6 col-md-6 col-sm-12'><div class='template-value-holder' title='Use this sample template'><h6 class='text-primary'>"+getSampleTitle(sessionStorage.getItem("selected_sample_type_"+spt[3]))+"</h6><div id='template_value_"+id+"_"+key+"'></div></div></div>");
                 value.map((val, index) => {
-                    if(val['sample_slug'] !== undefined){
+                    console.log(type)
+                    if(val['sample_slug'] !== undefined && val["type"] == sessionStorage.getItem("selected_sample_type_"+spt[3])){
                         $('#template_value_'+id+'_'+key).append("<div class='d-inline' id='sample_slct_col_"+val['sample_slug']+"'><input hidden name='content_sample[]' value='{"+'"'+"sample_slug"+'"'+":"+'"'+val['sample_slug']+'"'+", "+'"'+"sample_name"+'"'+":"+'"'+val['sample_name']+'"'+"}'><button class='btn btn-sample off' onclick=''>" + ucFirst(val['sample_name']) + "</button></div>");
                     }
                 });
@@ -291,9 +314,11 @@
     }
 
     
-    function loadFactory(id) {        
+    function loadFactory(id, type) {        
         var idx = document.getElementById("typeopt_"+id).value;
         const objIndex = columns.findIndex((obj => obj.id == id));
+
+        toogleAvailableSample(id, type);
 
         $.ajax({
             url: "/api/v2/column/factory/"+idx,
@@ -334,7 +359,7 @@
         $("#sample_item_holder_"+id).empty();
     }
 
-    function addSelectedSample(id, sample_slug, sample_name, is_deleted){
+    function addSelectedSample(id, sample_slug, sample_name, is_deleted, type, objIndex){
         var found = false;
 
         //Remove selected sample from sample collection
@@ -356,33 +381,34 @@
                     "sample_name":sample_name, 
                     "sample_slug":sample_slug, 
                 });
-                $("#sample_slct_item_holder_"+id).append("<div class='d-inline' id='sample_col_"+sample_slug+"'><input hidden name='content_sample[]' value='{"+'"'+"sample_slug"+'"'+":"+'"'+sample_slug+'"'+", "+'"'+"sample_name"+'"'+":"+'"'+sample_name+'"'+"}'><button class='btn btn-sample off' onclick='removeSelectedSample("+'"'+ id +'"'+", "+'"' + sample_slug + '"'+", "+'"' + sample_name + '"'+")'>" + ucFirst(sample_name) + "</button></div>");
+                $("#sample_slct_item_holder_"+id).append("<div class='d-inline' id='sample_col_"+sample_slug+"'><input hidden name='content_sample[]' value='{"+'"'+"sample_slug"+'"'+":"+'"'+sample_slug+'"'+", "+'"'+"sample_name"+'"'+":"+'"'+sample_name+'"'+"}'><button class='btn btn-sample off' onclick='removeSelectedSample("+'"'+ id +'"'+", "+'"' + sample_slug + '"'+", "+'"' + sample_name + '"'+","+'"' + type + '"'+",' + objIndex + ')'>" + ucFirst(sample_name) + "</button></div>");
             }
         } else { 
             slct_list.push({
                 "sample_name":sample_name, 
                 "sample_slug":sample_slug, 
             });
-            $("#sample_slct_item_holder_"+id).append("<div class='d-inline' id='sample_col_"+sample_slug+"'><input hidden name='content_sample[]' value='{"+'"'+"sample_slug"+'"'+":"+'"'+sample_slug+'"'+", "+'"'+"sample_name"+'"'+":"+'"'+sample_name+'"'+"}'><button class='btn btn-sample off' onclick='removeSelectedSample("+'"'+ id +'"'+", "+'"' + sample_slug + '"'+", "+'"' + sample_name + '"'+")'>" + ucFirst(sample_name) + "</button></div>");
+            $("#sample_slct_item_holder_"+id).append("<div class='d-inline' id='sample_col_"+sample_slug+"'><input hidden name='content_sample[]' value='{"+'"'+"sample_slug"+'"'+":"+'"'+sample_slug+'"'+", "+'"'+"sample_name"+'"'+":"+'"'+sample_name+'"'+"}'><button class='btn btn-sample off' onclick='removeSelectedSample("+'"'+ id +'"'+", "+'"' + sample_slug + '"'+", "+'"' + sample_name + '"'+","+'"' + type + '"'+",' + objIndex + ')'>" + ucFirst(sample_name) + "</button></div>");
         }
 
-        getButtonSubmitSample(id);
+        getButtonSubmitSample(id, type, objIndex);
     }
 
-    function removeSelectedSample(id, sample_slug, sample_name){
+    function removeSelectedSample(id, sample_slug, sample_name, type, objIndex){
         //Remove selected sample
         var sample = document.getElementById('sample_col_'+sample_slug);
         slct_list = slct_list.filter(function(e) { return e['sample_slug'] !== sample_slug })
         sample.parentNode.removeChild(sample);
 
         //Return selected sample to sample collection
-        $("#sample_item_holder_"+id).append('<button class="btn btn-sample off" id="sample_col_' + sample_slug +'" onclick="addSelectedSample('+"'"+ id +"'"+', '+"'" + sample_slug + "'"+', '+"'" + sample_name + "'"+',true)">' + ucFirst(sample_name) + '</button>');
+        $("#sample_item_holder_"+id).append('<button class="btn btn-sample off" id="sample_col_' + sample_slug +'" onclick="addSelectedSample('+"'"+ id +"'"+', '+"'" + sample_slug + "'"+', '+"'" + sample_name + "'"+',true,'+"'" + type + "'"+',' + objIndex + ')">' + ucFirst(sample_name) + '</button>');
 
-        getButtonSubmitSample(id);
+        getButtonSubmitSample(id, type, objIndex);
     }
 
-    function loadSample(id) {        
+    function loadSample(id, type, objIndex) {        
         var page = 1;
+        $("#sample_item_holder_"+id).empty();
         $("#sample_loading_holder_"+id).show();
 
         $.ajax({
@@ -401,7 +427,7 @@
                 //Attribute
                 var sampleName = data[i].country_name;
 
-                var elmt = '<button class="btn btn-sample off" id="sample_col_' + removeSpaces(sampleName) +'" onclick="addSelectedSample('+"'"+ id +"'"+', '+"'" + removeSpaces(sampleName) + "'"+', '+"'" + sampleName + "'"+',true)">' + ucFirst(sampleName) + '</button>';
+                var elmt = '<button class="btn btn-sample off" id="sample_col_' + removeSpaces(sampleName) +'" onclick="addSelectedSample('+"'"+ id +"'"+', '+"'" + removeSpaces(sampleName) + "'"+', '+"'" + sampleName + "'"+',true,'+"'" + type + "'"+',' + objIndex + ')">' + ucFirst(sampleName) + '</button>';
                 
                 $("#sample_item_holder_"+id).append(elmt);   
             }
@@ -415,16 +441,21 @@
         });
     }
 
-    function getButtonSubmitSample(id){
+    function getButtonSubmitSample(id, type, objIndex){
         if(slct_list.length == 0){
             document.getElementById("btn-submit-holder_" + id).innerHTML = '<button disabled class="btn custom-submit-modal" onclick=""><i class="fa-solid fa-lock"></i> Locked</button>';
         } else {
-            document.getElementById("btn-submit-holder_" + id).innerHTML = '<button class="btn custom-submit-modal" onclick="saveSelectedSample(' + "'" + id + "'" +',' + "'country'" +')" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#successModal"><i class="fa-solid fa-floppy-disk"></i> Save</button>';
+            document.getElementById("btn-submit-holder_" + id).innerHTML = '<button class="btn custom-submit-modal" onclick="saveSelectedSample(' + "'" + id + "'" +',' + "'" + type + "'" +',' + objIndex +')" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#successModal"><i class="fa-solid fa-floppy-disk"></i> Save</button>';
         }
     }
 
-    function saveSelectedSample(id,type){
+    function saveSelectedSample(id,type, objIndex){
+        slct_list.forEach(function(e) {
+            e.type = type;
+        });
         sessionStorage.setItem('selected_sample_value_'+id, JSON.stringify(slct_list));
         sessionStorage.setItem('selected_sample_type_'+id, type);
+        toogleAvailableSample(id, type, objIndex);
+        console.log(slct_list)
     }
 </script>

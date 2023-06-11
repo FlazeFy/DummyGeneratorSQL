@@ -10,7 +10,7 @@
                     <p>{{ucfirst($m->menu_desc)}}</p>
                     <div class="stats-box">
                         <h6>Total Dummy Generated</h6>
-                        <h2>200</h2>
+                        <h2>{{$m->total_dummy}} <span style="font-size:20px;">rows</span></h2>
                     </div>
                 </button>
             </form>
