@@ -157,6 +157,7 @@
         if (typeof val === "string") {
             val = cleanTableColumnName(val);
         }
+        // sessionStorage.clear();
 
         if(type == "column"){
             columns[objIndex] = {
@@ -263,8 +264,13 @@
         console.log(columns);
     }
 
-    function useSample(id, objIndex){
-        
+    function useSample(id, type, objIndex, sessKey){
+        var oldItem = sessionStorage.getItem("selected_sample_type_"+sessKey);
+        sessionStorage.setItem("selected_sample_type_"+sessKey+"_active", oldItem);
+        // sessionStorage.removeItem("selected_sample_type_"+sessKey);
+        delete window.sessionStorage["selected_sample_type_"+sessKey];
+
+        toogleAvailableSample(id, type, objIndex);
     }   
 
     function toogleAvailableSample(id, type, objIndex){
@@ -287,21 +293,54 @@
         var matchingValues = [];
 
         $("#sample_template_load_"+id).empty();
-        for (var key in sessionStorage) {
-            if (key.startsWith("selected_sample_value_")) {
-                var value = JSON.parse(sessionStorage.getItem(key));
-                var type = key.startsWith("selected_sample_type_");
-                var spt = key.split("_");
-                
-                $("#sample_template_load_"+id).append("<div class='col-lg-6 col-md-6 col-sm-12'><div class='template-value-holder' title='Use this sample template'><h6 class='text-primary'>"+getSampleTitle(sessionStorage.getItem("selected_sample_type_"+spt[3]))+"</h6><div id='template_value_"+id+"_"+key+"'></div></div></div>");
-                value.map((val, index) => {
-                    console.log(type)
-                    if(val['sample_slug'] !== undefined && val["type"] == sessionStorage.getItem("selected_sample_type_"+spt[3])){
-                        $('#template_value_'+id+'_'+key).append("<div class='d-inline' id='sample_slct_col_"+val['sample_slug']+"'><input hidden name='content_sample[]' value='{"+'"'+"sample_slug"+'"'+":"+'"'+val['sample_slug']+'"'+", "+'"'+"sample_name"+'"'+":"+'"'+val['sample_name']+'"'+"}'><button class='btn btn-sample off' onclick=''>" + ucFirst(val['sample_name']) + "</button></div>");
+        for(var key2 in sessionStorage){
+            key2.startsWith("selected_sample_type_");
+            var spt2 = key2.split("_");
+            if(spt2.length >= 5 && spt2[2] == "type"){
+                //console.log(spt2)
+
+                if(spt2.length == 6){
+                    var cls = " active";
+                    var sessKey = spt2[3]+"_"+spt2[4]+"_active";
+                } else if(spt2.length == 5){
+                    var cls = "";
+                    var sessKey = spt2[3]+"_"+spt2[4];
+                }
+
+                var elmt = " " +
+                    "<div class='col-lg-6 col-md-6 col-sm-12'> " +
+                        "<div class='template-value-holder " + cls + "' title='Use this sample template' onclick='useSample("+'"'+id+'","'+type+'","'+spt2[3]+'","'+sessKey+'"'+")'> " +
+                            "<h6 class='text-primary'>"+getSampleTitle(sessionStorage.getItem("selected_sample_type_"+sessKey))+"</h6> " +
+                            "<div id='template_value_"+id+"_"+sessKey+"'></div> " +
+                        "</div> " +
+                    "</div> ";   
+
+                $("#sample_template_load_"+id).append(elmt);  
+                                
+                for (var key in sessionStorage) {
+                    if (key.startsWith("selected_sample_value_")) {
+                        var value = JSON.parse(sessionStorage.getItem(key));
+                        key.startsWith("selected_sample_value_");
+                        var spt = key.split("_");
+                        // console.log(spt)
+
+                        value.map((val, index) => {
+                            if(val['sample_slug'] !== undefined && val["type"] == sessionStorage.getItem("selected_sample_type_"+sessKey) && val['parent_code'] == spt2[4]){
+                                //console.log(spt[4]+" "+spt2[4])
+                                $('#template_value_'+id+'_'+sessKey).append("<div class='d-inline' id='sample_slct_col_"+val['sample_slug']+"'><input hidden name='content_sample[]' value='{"+'"'+"sample_slug"+'"'+":"+'"'+val['sample_slug']+'"'+", "+'"'+"sample_name"+'"'+":"+'"'+val['sample_name']+'"'+"}'><button class='btn btn-sample off' onclick=''>" + ucFirst(val['sample_name']) + "</button></div>");
+                            }
+                        });
                     }
-                });
+                }
             }
         }
+
+        // $("#sample_template_load_"+id).empty();
+        // for (var key in sessionStorage) {
+        //     if (key.startsWith("selected_sample_value_")) {
+                
+        //     }
+        // }
     }
 
     function deleteColumn(id){
@@ -450,12 +489,19 @@
     }
 
     function saveSelectedSample(id,type, objIndex){
+        var ext_id = getAttCode();
+
         slct_list.forEach(function(e) {
             e.type = type;
+            e.parent_code = ext_id;
         });
-        sessionStorage.setItem('selected_sample_value_'+id, JSON.stringify(slct_list));
-        sessionStorage.setItem('selected_sample_type_'+id, type);
+
+        sessionStorage.setItem('selected_sample_value_'+id+'_'+ext_id, JSON.stringify(slct_list));
+        sessionStorage.setItem('selected_sample_type_'+id+'_'+ext_id, type);
+        document.getElementById('sample_slct_item_holder_'+id).innerHTML = "";
         toogleAvailableSample(id, type, objIndex);
+        slct_list = [];
+
         console.log(slct_list)
     }
 </script>

@@ -26,6 +26,9 @@
     transition: all 2s; */
     cursor: pointer;
 }
+.template-value-holder.active{
+    background: #7FD1AE;
+}
 .template-value-holder:hover{
     border: 2px solid #407BFF;
 }
